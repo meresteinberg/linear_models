@@ -1,5 +1,5 @@
 ---
-title: "linear_models"
+title: "Linear_Models"
 output: github_document
 date: "2024-11-08"
 ---
@@ -70,4 +70,50 @@ fit |>
   knitr::kable(digits=3)
   
 ```
+
+
+## Some diagnostics
+(backtrack to some EDA) 
+```{r}
+nyc_airbnb |> 
+  ggplot(aes(x=stars, y=price))+
+  geom_point()+
+  stat_smooth(method="lm")
+```
+
+Most diagnostics use residuals
+
+```{r}
+modelr::add_residuals(nyc_airbnb, fit) |> 
+  ggplot(aes(x=resid)) +
+  geom_histogram()
+```
+first modelr:: line creates new df with residuals added to table of nyc_airbnb
+
+```{r}
+modelr::add_residuals(nyc_airbnb, fit) |> 
+  ggplot(aes(x=borough, y=resid)) +
+  geom_violin()+
+  ylim(-200,500)
+```
+highly skewed residuals apparent
+
+
+Residuals against stars
+
+```{r}
+modelr::add_residuals(nyc_airbnb, fit) |> 
+  ggplot(aes(x=stars, y=resid)) +
+  geom_point()
+```
+
+Residuals against fitted values
+```{r}
+nyc_airbnb |> 
+  modelr::add_residuals(fit) |> 
+  modelr::add_predictions(fit) |> 
+  ggplot(aes(x=pred, y=resid)) +
+  geom_point()
+```
+
 
